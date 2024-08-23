@@ -4,8 +4,8 @@ import os
 import time
 import EasyOcr_Bounding_box_into_mask
 from EasyOcr_Bounding_box_into_mask import main
-from shapely.geometry import Polygon
-from shapely.validation import make_valid
+# from shapely.geometry import Polygon
+# from shapely.validation import make_valid
 
 
 
@@ -24,17 +24,7 @@ def retain_contours(source_image,mask_image,bounding_boxes):
         # blank_image_copy = blank_image.copy()
         box = np.array(box, dtype=np.int32)
         box = box.reshape((-1, 1, 2))
-        # cv2.fillPoly(blank_image_bbox, [box], 255)
-        # intersections_with_bbox = cv2.bitwise_and(blank_image_bbox,mask_image)
-        # intersection_area_bbox = np.sum(intersections_with_bbox)
-        # bbox_mask_area = np.sum(blank_image_bbox)
-        # print("bbox_mask_intersection_area",bbox_mask_area)
-        # if bbox_mask_area==0:
-        #     return 0
-        # intersection_percentage_bbox = intersection_area_bbox/bbox_mask_area
-        # # print("intersection percentage",intersection_percentage_bbox)
-        # if intersection_percentage_bbox >=0:
-           
+      
         cv2.fillPoly(blank_image, [box], 255)
             # cv2.imwrite("merged_image.jpg",output)
             # cv2.imwrite("blank_image.jpg",blank_image_bbox)
@@ -100,117 +90,6 @@ def text_erasing_using_pointpolygon_text(source_mask_image, text_mask):
     return combined_mask, output_mask, text_mask
 
 
-
-
-# def text_erasing_using_pointpolygon_text(source_mask_image, text_mask):
-#     # Apply binary thresholding to the masks
-#     _, zone_mask = cv2.threshold(source_mask_image, 10, 255, cv2.THRESH_BINARY)
-#     _, text_mask = cv2.threshold(text_mask, 10, 255, cv2.THRESH_BINARY)
-
-#     # Find contours in the masks
-#     zone_contours, _ = cv2.findContours(zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#     text_contours, _ = cv2.findContours(text_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-
-#     # Initialize a list to store inner points
-#     inner_point_list = []
-
-#     # Initialize an output mask
-#     output_mask = np.zeros_like(zone_mask)
-    
-#     # Initialize combined_mask with a copy of zone_mask
-#     # combined_mask = zone_mask.copy()
-
-#     # Iterate through each text contour
-#     for text_contour in text_contours:
-#         pts_tuple_inside_cnt = []
-
-#         # Check if each point in the text contour lies within any zone contour
-#         for zone_contour in zone_contours:
-#             for pt in text_contour:
-#                 pt_tuple = tuple(int(x) for x in pt[0])
-
-#                 # Check if the point is inside the zone contour
-#                 result = cv2.pointPolygonTest(zone_contour, pt_tuple, False)
-#                 if result > 0:
-#                     pts_tuple_inside_cnt.append(pt_tuple)
-
-#             # If points were found inside the zone contour, calculate the intersection percentage
-#             if pts_tuple_inside_cnt:
-#                 intersection_percent = len(pts_tuple_inside_cnt) / len(text_contour)
-#                 if intersection_percent >= 0.1:
-#                     pts_contour = np.array(pts_tuple_inside_cnt, dtype=np.int32).reshape((-1, 1, 2))
-#                     inner_point_list.append(pts_contour)
-#                 # Clear the list after each zone contour check
-#                 pts_tuple_inside_cnt.clear()
-
-#     # Draw the resulting contours on the output mask and save the images
-#     for contour in inner_point_list:
-#         cnt = np.array(contour, dtype=np.int32)
-#         cnt = cnt.reshape((-1, 1, 2))
-#         cv2.fillPoly(output_mask, [cnt], (255, 255, 255))
-
-#     # Combine the zone mask and the output mask
-#     combined_mask = cv2.bitwise_or(zone_mask, output_mask)
-
-#     return combined_mask, output_mask
-
-
-##############################################################################################
-
-# def text_erasing_using_pointpolygon_text(source_mask_image,text_mask):
-
-#     # Apply binary thresholding to the masks
-#     _, zone_mask = cv2.threshold(source_mask_image, 10, 255, cv2.THRESH_BINARY)
-    
-#     _, text_mask = cv2.threshold(text_mask, 10, 255, cv2.THRESH_BINARY)
-    
-
-#     # Find contours in the masks
-#     zone_contours, _ = cv2.findContours(zone_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#     text_contours, _ = cv2.findContours(text_mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-
-#     # Initialize a list to store inner points
-#     inner_point_list = []
-
-#     # Initialize an output mask
-#     output_mask = np.zeros_like(zone_mask)
-#     # Iterate through each text contour
-#     for text_contour in text_contours:
-#         pts_tuple_inside_cnt = []
-
-#         # Check if each point in the text contour lies within any zone contour
-#         for zone_contour in zone_contours:
-#             for pt in text_contour:
-#                 pt_tuple = tuple(int(x) for x in pt[0])
-
-#                 # Check if the point is inside the zone contour
-#                 result = cv2.pointPolygonTest(zone_contour, pt_tuple, False)
-#                 if result > 0:
-#                     pts_tuple_inside_cnt.append(pt_tuple)
-
-#             # If points were found inside the zone contour, calculate the intersection percentage
-#             if pts_tuple_inside_cnt:
-#                 intersection_percent = len(pts_tuple_inside_cnt) / len(text_contour)
-#                 if intersection_percent >= 0.1:
-#                     pts_contour = np.array(pts_tuple_inside_cnt, dtype=np.int32).reshape((-1, 1, 2))
-#                     inner_point_list.append(pts_contour)
-#                 # Clear the list after each zone contour check
-#                 pts_tuple_inside_cnt.clear()
-#     # Draw the resulting contours on the output mask and save the images
-#     for contour in inner_point_list:
-#         cnt = np.array(contour, dtype=np.int32)
-#         cnt = cnt.reshape((-1, 1, 2))
-#         cv2.fillPoly(output_mask,[cnt],(255,255,255))
-#         # cv2.imwrite("output_mask_314.jpg",output_mask)
-#         combined_mask = cv2.bitwise_or(zone_mask,output_mask)
-#         # cv2.imwrite("combined_mask11234567.jpg",combined_mask)
-#     return combined_mask,output_mask,text_mask
-        
-# intersected_contours = []
-
-############################################################################################################################
-
-
 def process_image(source_image_path, source_mask_path, output_dir):
     ori_image_name = os.path.splitext(os.path.basename(source_image_path))[0]
     print(f"Processing ori image name image: {ori_image_name}")
@@ -235,14 +114,6 @@ def process_image(source_image_path, source_mask_path, output_dir):
     # intersected_contours = retain_intersected_contours(retained_contours,mask_image)
     combined_mask,output_text_mask,text_pixel_mask= text_erasing_using_pointpolygon_text(mask_image,output)
 
-    # if intersected_contours is not None:
-    #     print("intersected_retained_contours",len(intersected_contours))
-    #     print("Length of retained Contours",len(retained_contours))
-    # merged_result,text_mask = draw_intersected_contours_on_mask_image(mask_image,intersected_contours)
-    # if intersected_contours is not None:
-    #     intersected_contours.clear()
-    # if retained_contours is not None: 
-    #     retained_contours.clear()
     return combined_mask,output_text_mask,text_pixel_mask
 
 
